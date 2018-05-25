@@ -126,4 +126,68 @@ describe('verifyShares', () => {
       'should validate the address correctly'
     );
   });
-})
+});
+
+describe('signMessage', () => {
+
+  it('should throw error for missing shares', () => {
+    chai.expect(
+      () => eth.signMessage()
+    ).to.throw('invalid value passed for shares');
+  });
+
+  it('should throw error for empty shares', () => {
+    chai.expect(
+      () => eth.signMessage([])
+    ).to.throw('invalid value passed for shares');
+  });
+
+  it('should throw error for invalid shares', () => {
+    chai.expect(
+      () => eth.signMessage(['123'])
+    ).to.throw('invalid value passed for shares');
+  });
+
+  it('should throw error for missing message', () => {
+    const shares = eth.createWallet('test', 5, 3);
+    chai.expect(
+      () => eth.signMessage(shares.shares.slice(1,4))
+    ).to.throw('invalid value passed for message');
+  });
+
+  it('should throw error for invalid message', () => {
+    const shares = eth.createWallet('test', 5, 3);
+    chai.expect(
+      () => eth.signMessage(shares.shares.slice(1,4), 123)
+    ).to.throw('invalid value passed for message');
+  });
+
+  it('should sign a valid message', () => {
+    const shares = eth.createWallet('test', 5, 3);
+    const message = 'test message';
+    const signedMessage = eth.signMessage(shares.shares.slice(1,4), message);
+    assert.ok(signedMessage.message);
+    assert.ok(signedMessage.messageHash);
+    assert.ok(signedMessage.signature);
+    assert.ok(signedMessage.v);
+    assert.ok(signedMessage.r);
+    assert.ok(signedMessage.s);
+
+    assert.strictEqual(
+      signedMessage.message,
+      message,
+      'message should be same as signed message'
+    );
+  });
+
+  it('should sign a valid message and replace {address} with wallet address', () => {
+    const shares = eth.createWallet('test', 5, 3);
+    const message = 'test {address} message {address}';
+    const signedMessage = eth.signMessage(shares.shares.slice(1,4), message);
+    assert.strictEqual(
+      signedMessage.message,
+      `test ${shares.address} message ${shares.address}`,
+      'message should be replaced with address now',
+    )
+  });
+});
