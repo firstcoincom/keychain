@@ -29,7 +29,7 @@ const getRandom = (arr, n) => {
 }
 
 const verifyKeys = (files, numShares, threshold, address) => {
-  for(let i=1; i<=numShares; i++) {
+  for(let i=0; i<numShares; i++) {
     const randomFiles = getRandom(files, threshold);
     readFiles(randomFiles, {encoding: 'utf8'})
     .then(
@@ -56,11 +56,11 @@ const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, thresho
   logText("writing split keys");
   const files = [];
   data.shares.forEach((share, index) => {
-    const splitFilename = `/Volumes/${walletName}-${index + 1}/split.txt`;
+    const splitFilename = `/Volumes/${walletName}-${index}/split.txt`;
     files.push(splitFilename);
 
     write(splitFilename, share, logError);
-    write(`/Volumes/${walletName}-${index + 1}/address.txt`, data.address, logError);
+    write(`/Volumes/${walletName}-${index}/address.txt`, data.address, logError);
   });
 
   // verify created files
