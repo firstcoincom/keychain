@@ -22,4 +22,9 @@ sudo gshred -vvv -n20 -z /dev/<path>
 ```
 note: if the device is busy, unmount it from Disk Utility.
 
+3. Reformat the disk with proper name and FAT32.
+```
+sudo diskutil eraseDisk FAT32 NAME MBRFormat /dev/disk1
+```
+
 ![USB Shreding](https://preview.ibb.co/fk21zd/usb_key.jpg)
