@@ -21,3 +21,5 @@ sudo gshred -vvv -n20 -z /dev/<path>
 
 ```
 note: if the device is busy, unmount it from Disk Utility.
+
+![USB Shreding](https://preview.ibb.co/fk21zd/usb_key.jpg)
