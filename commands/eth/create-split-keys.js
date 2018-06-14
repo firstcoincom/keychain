@@ -74,7 +74,7 @@ const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, thresho
   setTimeout(() => verifyKeys(files, numShares, threshold, data.address), 10);
 }
 
-const configFilePath = '~/qrinfo.json';
+const configFilePath = '/home/pi/qrinfo.json';
 
 // run...
 fs.access(configFilePath, fs.constants.R_OK, (err) => { // checks for read permissions
