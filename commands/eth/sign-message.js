@@ -1,7 +1,8 @@
 const prompt = require('prompt');
 const readFiles = require('read-files-promise');
 
-const eth = require('../../../lib/eth');
+const eth = require('../../lib/eth');
+const utils = require('../utils');
 
 const logError = err => {
   if (err) {
@@ -10,8 +11,10 @@ const logError = err => {
   }
 }
 
+const usbBasePath = utils.getUsbBasePath();
+
 const signMessage = (walletName, usbNumbers, message) => {
-  const splitFiles = usbNumbers.trim().split(' ').map(num => `/Volumes/${walletName}-${num}/split.txt`);
+  const splitFiles = usbNumbers.trim().split(' ').map(num => `${usbBasePath}/${walletName}-${num}/split.txt`);
   readFiles(splitFiles, {encoding: 'utf8'})
   .then(
     shares => {

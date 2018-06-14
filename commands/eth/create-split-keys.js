@@ -2,7 +2,8 @@ const prompt = require('prompt');
 const write = require('write');
 const readFiles = require('read-files-promise');
 
-const eth = require('../../../lib/eth');
+const eth = require('../../lib/eth');
+const utils = require('../utils');
 
 const logError = err => {
   if (err) {
@@ -12,6 +13,7 @@ const logError = err => {
 }
 
 const logText = text => console.log(`\n============${text}================\n`)
+const usbBasePath = utils.getUsbBasePath();
 
 const getRandom = (arr, n) => {
   let result = new Array(n),
@@ -56,11 +58,12 @@ const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, thresho
   logText("writing split keys");
   const files = [];
   data.shares.forEach((share, index) => {
-    const splitFilename = `/Volumes/${walletName}-${index + 1}/split.txt`;
+    const splitFilename =`${usbBasePath}/${walletName}-${index + 1}/split.txt`;
     files.push(splitFilename);
 
     write(splitFilename, share, logError);
-    write(`/Volumes/${walletName}-${index + 1}/address.txt`, data.address, logError);
+    write(`${usbBasePath}/${walletName}-${index + 1}/address.txt`, data.address, logError);
+
   });
 
   // verify created files
