@@ -8,12 +8,11 @@ const getUsbBasePath = () => {
   }
 }
 
-const genQRCode = input => {
+const genQRCode = (input, filePath)  => {
   QRCode.toDataURL(input, function (err, url) {
     console.log(url)
     var fs = require('fs');
-    const fileName = ("home/pi/qrCode")
-    fs.writeFile(fileName, url, function(err) {
+    fs.writeFile(filePath, url, function(err) {
         if(err) {
             return console.log(err);
         }

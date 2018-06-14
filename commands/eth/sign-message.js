@@ -20,9 +20,10 @@ const signMessage = (walletName, usbNumbers, message) => {
   .then(
     shares => {
       console.log("\n\n");
-      const signedMessage = eth.signMessage(shares, message);
-      console.log(signedMessage);
-      utils.genQRCode(signedMessage);
+      const signedMsgQR = "/home/pi/signedMsgQR"
+      const signedMsg = eth.signMessage(shares, message);
+      console.log(signedMsg);
+      utils.genQRCode(signedMsg, signedMsgQR);
       console.log("\n\n");
     },
     logError,
