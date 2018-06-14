@@ -78,13 +78,13 @@ const configFilePath = '~/qrinfo.json';
 fs.access(configFilePath, fs.constants.R_OK, (err) => { // checks for read permissions
   if (err) {
     if (err.code === 'ENOENT') {
-      console.error('~/qrinfo.json does not exist');
+      console.error(`${configFilePath} does not exist`);
       return;
     }
     throw err;
   }
 
-  fs.readFile('create-split-keys-config.json', (err, data) => {
+  fs.readFile(configFilePath, (err, data) => {
     if(err) throw err;
     const results = JSON.parse(data);
     createSplitKeysAndVerifyResults(results.walletName, results.entropy, parseInt(results.numShares), parseInt(results.threshold));
