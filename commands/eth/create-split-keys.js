@@ -1,6 +1,7 @@
 const prompt = require('prompt');
 const write = require('write');
 const readFiles = require('read-files-promise');
+const fs = require('fs');
 
 const eth = require('../../lib/eth');
 const utils = require('../utils');
@@ -71,17 +72,36 @@ const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, thresho
   setTimeout(() => verifyKeys(files, numShares, threshold, data.address), 10);
 }
 
-prompt.start();
-prompt.get([
-  'walletName',
-  'entropy',
-  'numShares',
-  'threshold',
-], (err, results) => {
+const configFilePath = '~/qrinfo.json';
+
+// run...
+fs.access(configFilePath, fs.constants.R_OK, (err) => { // checks for read permissions
   if (err) {
-    console.log("unable to read inputs");
-    return;
+    if (err.code === 'ENOENT') {
+      console.error('~/qrinfo.json does not exist');
+      return;
+    }
+    throw err;
   }
 
-  createSplitKeysAndVerifyResults(results.walletName, results.entropy, parseInt(results.numShares), parseInt(results.threshold));
+  fs.readFile('create-split-keys-config.json', (err, data) => {
+    if(err) throw err;
+    const results = JSON.parse(data);
+    createSplitKeysAndVerifyResults(results.walletName, results.entropy, parseInt(results.numShares), parseInt(results.threshold));
+  });
 });
+
+// prompt.start();
+// prompt.get([
+//   'walletName',
+//   'entropy',
+//   'numShares',
+//   'threshold',
+// ], (err, results) => {
+//   if (err) {
+//     console.log("unable to read inputs");
+//     return;
+//   }
+
+//   createSplitKeysAndVerifyResults(results.walletName, results.entropy, parseInt(results.numShares), parseInt(results.threshold));
+// });
