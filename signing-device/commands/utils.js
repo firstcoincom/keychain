@@ -12,7 +12,7 @@ const genQRCode = (input, filePath)  => {
   QRCode.toDataURL(input, function (err, url) {
     console.log(url)
     var fs = require('fs');
-    url.replace(/^data:image\/(png|jpg);base64,/, '');
+    url.replace(/^data:image\/png;base64,/, '');
     fs.writeFile(filePath, url, function(err) {
         if(err) {
             return console.log(err);
