@@ -59,7 +59,7 @@ const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, thresho
   logText("writing split keys");
   const files = [];
   const addressQRPath = "/home/pi/addrQR.txt"
-  utils.genQRCode(data.address, addressQRPath);
+  //utils.genQRCode(data.address, addressQRPath);
   data.shares.forEach((share, index) => {
     const splitFilename =`${usbBasePath}/${walletName}-${index + 1}/split.txt`;
     files.push(splitFilename);
