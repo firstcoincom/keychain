@@ -1,5 +1,6 @@
 const prompt = require('prompt');
 const readFiles = require('read-files-promise');
+var QRCode = require('qrcode')
 
 const eth = require('../../lib/eth');
 const utils = require('../utils');
@@ -19,7 +20,10 @@ const signMessage = (walletName, usbNumbers, message) => {
   .then(
     shares => {
       console.log("\n\n");
-      console.log(eth.signMessage(shares, message));
+      const signedMsgQRPath = "/home/pi/signedMsgQR.txt"
+      const signedMsg = eth.signMessage(shares, message);
+      console.log(signedMsg);
+      utils.genQRCode(signedMsg, signedMsgQRPath);
       console.log("\n\n");
     },
     logError,
