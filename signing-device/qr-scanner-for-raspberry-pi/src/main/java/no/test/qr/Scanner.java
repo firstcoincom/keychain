@@ -29,43 +29,50 @@ public class Scanner {
     }
 
     public String scan() {
-        String result = null;
+    String result = null;
 	BufferedWriter bw = null;
 	FileWriter fw = null;
+    String jsonContent = null;
+    String fileName = null;
 
-        try {
-            Result r = new QRCodeReader().decode(acquireBitmapFromCamera());
-            result = r.getText();
-            logger.info("Scan Decode is successful: " + result);
+    try {
+        Result r = new QRCodeReader().decode(acquireBitmapFromCamera());
+        result = r.getText();
+        logger.info("Scan Decode is successful: " + result);
 	    fw = new FileWriter(QRFILE);
 	    bw = new BufferedWriter(fw);
 	    bw.write(result);
 
-            System.out.println(result);
+        System.out.println(result);
+        jsonContent = result.replaceAll("\\$*\\$", "")
+        fileName = result.replaceAll("^\\$","").replaceAll("*\\$","");
 
-        } catch (NotFoundException e) {
-            logger.error("QR Code was not found in the image. It might have been partially detected but could not be confirmed.");
-        } catch (ChecksumException e) {
-            logger.error("QR Code was successfully detected and decoded, but was not returned because its checksum feature failed.");
-        } catch (FormatException e) {
-            logger.error("QR Code was successfully detected, but some aspect of the content did not conform to the barcode's format rules. This could have been due to a mis-detection.");
-        } catch (InterruptedException e) {
-           logger.error("Error acquiring bitmap", e);
-        } catch (IOException e) {
-            logger.error("I/O error acquiring bitmap: {}", e.getMessage());
-        } catch (Exception e) {
-            logger.error("error acquiring bitmap", e);
-        }
+        System.out.println(jsonContent);
+        System.out.println(fileName);
+
+    } catch (NotFoundException e) {
+        logger.error("QR Code was not found in the image. It might have been partially detected but could not be confirmed.");
+    } catch (ChecksumException e) {
+        logger.error("QR Code was successfully detected and decoded, but was not returned because its checksum feature failed.");
+    } catch (FormatException e) {
+        logger.error("QR Code was successfully detected, but some aspect of the content did not conform to the barcode's format rules. This could have been due to a mis-detection.");
+    } catch (InterruptedException e) {
+        logger.error("Error acquiring bitmap", e);
+    } catch (IOException e) {
+        logger.error("I/O error acquiring bitmap: {}", e.getMessage());
+    } catch (Exception e) {
+        logger.error("error acquiring bitmap", e);
+    }
 	finally {
 	    try {
-	    	if (bw != null)
-		   bw.close();
+	        if (bw != null)
+		        bw.close();
 	        if (fw != null)
-		   fw.close();
-             } catch (IOException ex) {
-	      	   ex.printStackTrace();
-	     }
-       }
+		        fw.close();
+            } catch (IOException ex) {
+	      	    ex.printStackTrace();
+	    }
+    }
 
         return result;
     }
