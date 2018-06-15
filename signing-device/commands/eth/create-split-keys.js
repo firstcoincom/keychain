@@ -58,7 +58,7 @@ const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, thresho
   // write files to pendrive
   logText("writing split keys");
   const files = [];
-  const addressQRPath = "/home/pi/config/create-key-config.txt"
+  const addressQRPath = "/home/pi/addrQR.txt"
   utils.genQRCode(data.address, addressQRPath);
   data.shares.forEach((share, index) => {
     const splitFilename =`${usbBasePath}/${walletName}-${index + 1}/split.txt`;
@@ -74,7 +74,7 @@ const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, thresho
   setTimeout(() => verifyKeys(files, numShares, threshold, data.address), 10);
 }
 
-const configFilePath = '/home/pi/qrinfo.json';
+const configFilePath = '/home/pi/config/create-key-config.txt';
 
 // run...
 fs.access(configFilePath, fs.constants.R_OK, (err) => { // checks for read permissions
