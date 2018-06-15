@@ -20,7 +20,7 @@ public class Scanner {
 
     private Logger logger = LoggerFactory.getLogger(Scanner.class);
     private static final String FILE_NAME = "/run/shm/scan.png";
-    private static final String QRFILE = "/home/pi/qrinfo.json";
+    private static final String QRFILEDIR = "/home/pi/config/";
 
     public static void main(String[] args) {
         while(true) {
@@ -34,14 +34,13 @@ public class Scanner {
 	FileWriter fw = null;
     String jsonContent = null;
     String fileName = null;
+    String fullQRFilePath = null;
 
     try {
         Result r = new QRCodeReader().decode(acquireBitmapFromCamera());
         result = r.getText();
         logger.info("Scan Decode is successful: " + result);
-	    fw = new FileWriter(QRFILE);
-	    bw = new BufferedWriter(fw);
-	    bw.write(result);
+
 
         System.out.println(result);
         jsonContent = result.replaceAll("\\$.*\\$ *","").trim();
@@ -49,6 +48,12 @@ public class Scanner {
 
         System.out.println(jsonContent);
         System.out.println(fileName);
+
+        fullQRFilePath = QRFILEDIR.concat(fileName)
+
+        fw = new FileWriter(fullQRFilePath);
+	    bw = new BufferedWriter(fw);
+	    bw.write(jsonContent);
 
     } catch (NotFoundException e) {
         logger.error("QR Code was not found in the image. It might have been partially detected but could not be confirmed.");
