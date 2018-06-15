@@ -44,7 +44,7 @@ public class Scanner {
 	    bw.write(result);
 
         System.out.println(result);
-        jsonContent = result.replaceAll("\\$.*\\$ *", "").trim();
+        jsonContent = result.replaceAll("\\$.*\\$ *","").trim();
         fileName = result.replaceAll("^\\$","").replaceAll("\\$.*","").trim();
 
         System.out.println(jsonContent);
