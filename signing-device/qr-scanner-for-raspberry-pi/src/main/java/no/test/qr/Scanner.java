@@ -49,7 +49,7 @@ public class Scanner {
         System.out.println(jsonContent);
         System.out.println(fileName);
 
-        fullQRFilePath = QRFILEDIR.concat(fileName)
+        fullQRFilePath = QRFILEDIR.concat(fileName);
 
         fw = new FileWriter(fullQRFilePath);
 	    bw = new BufferedWriter(fw);
