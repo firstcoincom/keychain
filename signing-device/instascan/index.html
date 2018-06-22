@@ -12,7 +12,7 @@
     <div id="app">      
       <div class="preview-container" v-show="!isScanning">
         <section class="scans">
-          <h2>Scans</h2>
+          <h2>New Keys</h2>
           <ul v-if="scans.length === 0">
             <li class="empty">No scans yet</li>
           </ul>
@@ -24,7 +24,7 @@
       <div class="preview-container" v-show="isScanning">
         <video id="preview"></video>
       </div>
-      <button v-on:click="openCamera()">Open Camera</button>
+      <button v-on:click="openCamera()" v-show="!isScanning">Open Camera</button>
     </div>
     <script type="text/javascript" src="app.js"></script>
   </body>

@@ -37,8 +37,6 @@ var app = new Vue({
     },
     openCamera: function () {
       this.isScanning = true;
-      console.log("hello");
-      alert(this.isScanning);
     }, 
   }
 });
