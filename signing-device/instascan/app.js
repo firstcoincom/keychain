@@ -5,7 +5,8 @@ var app = new Vue({
     activeCameraId: null,
     cameras: [],
     scans: [],
-    isScanning: false
+    isScanning: false,
+    configJson: {}
   },
   mounted: function () {
     var self = this;
@@ -13,6 +14,8 @@ var app = new Vue({
     self.scanner.addListener('scan', function (content, image) {
       self.scans.unshift({ date: +(Date.now()), content: content });
       alert(content);
+      self.configJson = JSON.parse(content);
+      console.log(self.configJson);
       self.isScanning = false;
     });
     Instascan.Camera.getCameras().then(function (cameras) {

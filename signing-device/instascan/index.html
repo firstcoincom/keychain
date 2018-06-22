@@ -19,7 +19,11 @@
             <li class="empty">No scans yet</li>
           </ul>
           <transition-group name="scans" tag="ul">
-            <li v-for="scan in scans" :key="scan.date" :title="scan.content">{{ scan.content }}</li>
+            <!-- <li v-for="scan in scans" :key="scan.date" :title="scan.content">{{ scan.content }}</li> -->
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content">Wallet Name: {{ configJson.walletName }}</li>
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content">Entropy: {{ configJson.entropy }}</li>
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content"># of Shares: {{ configJson.numShares }}</li>
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content">Threshold: {{ configJson.threshold }}</li>
           </transition-group>
         </section>
       </div>
