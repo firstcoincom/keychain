@@ -65,6 +65,7 @@
          function downloadConfig(data) {
              var blob = new Blob([JSON.stringify(data)], { type: "" });
              saveAs(blob, "config.json");
+             alert("USB keys generated!")
          }
          // 導出生成文本
          function downloadMessage(data) {
