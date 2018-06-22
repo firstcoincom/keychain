@@ -39,8 +39,8 @@
       <div class="preview-container" v-show="isScanning">
         <video id="preview"></video>
       </div>
-      <button v-on:click="downloadConfig()" v-show="isConfig&!initial">Save Config</button>
-      <button v-on:click="downloadMessage()" v-show="!isConfig&!initial">Save Message</button>
+      <button v-on:click="downloadConfig()" v-show="isConfig&!initial">Create USB Keys</button>
+      <button v-on:click="openSignedMessage()" v-show="!isConfig&!initial">Generate Message</button>
     </div>
     <script type="text/javascript" src="app.js"></script>
   </body>
@@ -70,6 +70,12 @@
          function downloadMessage(data) {
              var blob = new Blob([JSON.stringify(data)], { type: "text/plain;charset=utf-8" });
              saveAs(blob, "message.txt");
+         }
+         function openSignedMessage(data) {
+            //  var blob = new Blob([JSON.stringify(data)], { type: "text/plain;charset=utf-8" });
+            //  saveAs(blob, "message.txt");
+             window.open("http://127.0.0.1:8080",'_blank');
+            //  window.open(url);
          }
     </script>
 </html>
