@@ -6,7 +6,9 @@ var app = new Vue({
     cameras: [],
     scans: [],
     isScanning: false,
-    configJson: {}
+    configson: null,
+    isConfig: true,
+    initial : true
   },
   mounted: function () {
     var self = this;
@@ -16,7 +18,16 @@ var app = new Vue({
       alert(content);
       self.configJson = JSON.parse(content);
       console.log(self.configJson);
+
+      if (self.configJson.type == null)
+      {
+        self.isConfig = false;
+      }
+      else{
+        self.isConfig = true;
+      }
       self.isScanning = false;
+      self.initial = false;
     });
     Instascan.Camera.getCameras().then(function (cameras) {
       self.cameras = cameras;

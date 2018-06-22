@@ -11,26 +11,36 @@
   <body>
     <!-- <a href="https://github.com/schmich/instascan"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a> -->
     <div id="app">      
-      <button v-on:click="openCamera()"v-show="!isScanning">Open Camera</button>
+      <button v-on:click="openCamera()" v-show="!isScanning">Open Camera</button>
       <div class="preview-container" v-show="!isScanning">
         <section class="scans">
-          <h2>New Keys</h2>
-          <ul v-if="scans.length === 0">
+          <h2 v-show="initial">Please scan to create new wallet or sign message</h2> 
+          <h2 v-show="isConfig&!initial">New Keys</h2>
+          <h2 v-show="!isConfig&!initial">Sign Message</h2>
+          <ul v-if="scans.length === 0&!initial">
             <li class="empty">No scans yet</li>
           </ul>
-          <transition-group name="scans" tag="ul">
+          <transition-group name="scans" tag="ul" v-show="isConfig&!initial">
             <!-- <li v-for="scan in scans" :key="scan.date" :title="scan.content">{{ scan.content }}</li> -->
             <li v-for="scan in scans" :key="scan.date" :title="scan.content">Wallet Name: {{ configJson.walletName }}</li>
             <li v-for="scan in scans" :key="scan.date" :title="scan.content">Entropy: {{ configJson.entropy }}</li>
             <li v-for="scan in scans" :key="scan.date" :title="scan.content"># of Shares: {{ configJson.numShares }}</li>
             <li v-for="scan in scans" :key="scan.date" :title="scan.content">Threshold: {{ configJson.threshold }}</li>
           </transition-group>
+          <transition-group name="scans" tag="ul" v-show="!isConfig&!initial">
+            <!-- <li v-for="scan in scans" :key="scan.date" :title="scan.content">{{ scan.content }}</li> -->
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content">To: {{ configJson.to }}</li>
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content">Value: 5</li>
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content">Gas: {{ configJson.gas }}</li>
+            <li v-for="scan in scans" :key="scan.date" :title="scan.content">From: {{ configJson.from }}</li>
+          </transition-group>
         </section>
       </div>
       <div class="preview-container" v-show="isScanning">
         <video id="preview"></video>
       </div>
-      <button v-on:click="downloadJson()" v-show="!isScanning">Save Config</button>
+      <button v-on:click="downloadConfig()" v-show="isConfig&!initial">Save Config</button>
+      <button v-on:click="downloadMessage()" v-show="!isConfig&!initial">Save Message</button>
     </div>
     <script type="text/javascript" src="app.js"></script>
   </body>
@@ -52,14 +62,14 @@
              "height": "80"
          }];
          // 導出生成json文檔
-         function downloadJson(data) {
+         function downloadConfig(data) {
              var blob = new Blob([JSON.stringify(data)], { type: "" });
-             saveAs(blob, "hello.json");
+             saveAs(blob, "config.json");
          }
          // 導出生成文本
-         function downloadText(data) {
+         function downloadMessage(data) {
              var blob = new Blob([JSON.stringify(data)], { type: "text/plain;charset=utf-8" });
-             saveAs(blob, "hello.txt");
+             saveAs(blob, "message.txt");
          }
     </script>
 </html>

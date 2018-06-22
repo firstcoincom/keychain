@@ -21,7 +21,7 @@ class ConfigGenerator extends Component {
   generateQrCode = () => {
     console.log(this.state)
     const qrCodeString = 
-`{"walletName":"${this.state.walletName}","entropy":"${this.state.entropy}","numShares":${this.state.numShares},"threshold":${this.state.threshold}}`
+`{"type":"config","walletName":"${this.state.walletName}","entropy":"${this.state.entropy}","numShares":${this.state.numShares},"threshold":${this.state.threshold}}`
     this.setState({qrCodeValue: qrCodeString})
   }
 
