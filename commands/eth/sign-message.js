@@ -30,16 +30,22 @@ const signMessage = (walletName, usbNumbers, message) => {
   ).catch(logError);
 }
 
-prompt.start();
-prompt.get([
-  'walletName',
-  'usbNumbers',
-  'message'
-], (err, results) => {
-  if (err) {
-    console.log("unable to read inputs");
-    return;
-  }
+// prompt.start();
+// prompt.get([
+//   'walletName',
+//   'usbNumbers',
+//   'message'
+// ], (err, results) => {
+//   if (err) {
+//     console.log("unable to read inputs");
+//     return;
+//   }
 
-  signMessage(results.walletName, results.usbNumbers, results.message);
-});
+//   signMessage(results.walletName, results.usbNumbers, results.message);
+// });
+
+module.exports = {
+  signMessage
+}
+
+

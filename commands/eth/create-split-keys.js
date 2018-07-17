@@ -107,3 +107,6 @@ fs.access(configFilePath, fs.constants.R_OK, (err) => { // checks for read permi
 
 //   createSplitKeysAndVerifyResults(results.walletName, results.entropy, parseInt(results.numShares), parseInt(results.threshold));
 // });
+module.exports = {
+  createSplitKeysAndVerifyResults
+}
