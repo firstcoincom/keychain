@@ -16,33 +16,17 @@ const usbBasePath = utils.getUsbBasePath();
 
 const signMessage = (walletName, usbNumbers, message) => {
   const splitFiles = usbNumbers.trim().split(' ').map(num => `${usbBasePath}/${walletName}-${num}/split.txt`);
-  readFiles(splitFiles, {encoding: 'utf8'})
-  .then(
-    shares => {
-      console.log("\n\n");
-      const signedMsgQRPath = "/home/pi/signedMsgQR.txt"
-      const signedMsg = eth.signMessage(shares, message);
-      console.log(signedMsg);
-      utils.genQRCode(signedMsg, signedMsgQRPath);
-      console.log("\n\n");
-    },
-    logError,
-  ).catch(logError);
+  readFiles(splitFiles, { encoding: 'utf8' })
+    .then(
+      shares => {
+        console.log("\n\n");
+        const signedMsg = eth.signMessage(shares, message);
+        console.log(signedMsg);
+        console.log("\n\n");
+        return signedMsg;
+      },
+      logError);
 }
-
-// prompt.start();
-// prompt.get([
-//   'walletName',
-//   'usbNumbers',
-//   'message'
-// ], (err, results) => {
-//   if (err) {
-//     console.log("unable to read inputs");
-//     return;
-//   }
-
-//   signMessage(results.walletName, results.usbNumbers, results.message);
-// });
 
 module.exports = {
   signMessage
