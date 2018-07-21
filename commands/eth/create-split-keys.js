@@ -18,8 +18,8 @@ const usbBasePath = utils.getUsbBasePath();
 
 const getRandom = (arr, n) => {
   let result = new Array(n),
-      len = arr.length,
-      taken = new Array(len);
+    len = arr.length,
+    taken = new Array(len);
   if (n > len) {
     throw new RangeError("getRandom: more elements taken than available");
   }
@@ -32,81 +32,73 @@ const getRandom = (arr, n) => {
 }
 
 const verifyKeys = (files, numShares, threshold, address) => {
-  for(let i=1; i<=numShares; i++) {
+  for (let i = 1; i <= numShares; i++) {
     const randomFiles = getRandom(files, threshold);
-    readFiles(randomFiles, {encoding: 'utf8'})
-    .then(
-      shares => {
+
+    const promises = [];
+
+    var verified = true;
+    promises.push(new Promise(function (resolve, reject) {
+      readFiles(randomFiles, { encoding: 'utf8' }, function (shares) {
         const valid = eth.verifyShares(shares, address);
-        if (valid) {
-          logText(`verification ${i} completed`);
-        } else {
-          console.log("unable to verify keys");
-          process.exit(-1);
-        }
-      },
-      logError
-    );
+        verified = verified && valid;
+        resolve(valid);
+      }, function (err) {
+        reject(err);
+      });
+    }));
+
+    return Promise.all(promises).then(function () {
+      return verified;
+    }).catch(function (err) {
+      throw err;
+    });
   }
 }
 
-const createSplitKeysAndVerifyResults = (walletName, entropy, numShares, threshold) => {
+const createSplitKeys = (walletName, entropy, numShares, threshold) => {
   // create wallet with split keys
   logText("creating wallet");
   const data = eth.createWallet(entropy, numShares, threshold);
 
   // write files to pendrive
   logText("writing split keys");
+
   const files = [];
-  const addressQRPath = "/home/pi/addrQR.txt"
-  utils.genQRCode(data.address, addressQRPath);
+  const promises = [];
+
   data.shares.forEach((share, index) => {
-    const splitFilename =`${usbBasePath}/${walletName}-${index + 1}/split.txt`;
+    const splitFilename = `${usbBasePath}/${walletName}-${index + 1}/split.txt`;
+    const addressFilename = `${usbBasePath}/${walletName}-${index + 1}/address.txt`;
     files.push(splitFilename);
 
-    write(splitFilename, share, logError);
-    write(`${usbBasePath}/${walletName}-${index + 1}/address.txt`, data.address, logError);
+    promises.push(new Promise(function (resolve, reject) {
+      write(splitFilename, share).then(function () {
+        resolve(true);
+      }).catch(function (err) {
+        reject(err);
+      });
+    }));
 
+    promises.push(new Promise(function (resolve, reject) {
+      write(addressFilename, data.address).then(function () {
+        resolve(true);
+      }).catch(function (err) {
+        reject(err);
+      });
+    }));
   });
 
-  // verify created files
-  logText("verifying keys");
-  setTimeout(() => verifyKeys(files, numShares, threshold, data.address), 10);
+  return Promise.all(promises).then(function () {
+    console.log(data);
+    return data;
+  }).catch(function (err) {
+    console.log(err);
+    throw err;
+  });
 }
 
-const configFilePath = '/home/pi/qrinfo.json';
-
-// run...
-fs.access(configFilePath, fs.constants.R_OK, (err) => { // checks for read permissions
-  if (err) {
-    if (err.code === 'ENOENT') {
-      console.error(`${configFilePath} does not exist`);
-      return;
-    }
-    throw err;
-  }
-
-  fs.readFile(configFilePath, (err, data) => {
-    if(err) throw err;
-    const results = JSON.parse(data);
-    createSplitKeysAndVerifyResults(results.walletName, results.entropy, parseInt(results.numShares), parseInt(results.threshold));
-  });
-});
-
-// prompt.start();
-// prompt.get([
-//   'walletName',
-//   'entropy',
-//   'numShares',
-//   'threshold',
-// ], (err, results) => {
-//   if (err) {
-//     console.log("unable to read inputs");
-//     return;
-//   }
-
-//   createSplitKeysAndVerifyResults(results.walletName, results.entropy, parseInt(results.numShares), parseInt(results.threshold));
-// });
 module.exports = {
-  createSplitKeysAndVerifyResults
+  createSplitKeys,
+  verifyKeys
 }
