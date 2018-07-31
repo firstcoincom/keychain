@@ -31,10 +31,18 @@ const getRandom = (arr, n) => {
   return result;
 }
 
-const verifyKeys = (files, numShares, threshold, address) => {
-  for (let i = 1; i <= numShares; i++) {
-    const randomFiles = getRandom(files, threshold);
+const verifyKeys = (numShares, threshold, address) => {
 
+  logText("verify keys"); 
+  const files = [];
+  for (let i = 1; i <= numShares; i++) {
+    const splitFilename = `${usbBasePath}/${walletName}-${i}/split.txt`;
+    files.push(splitFilename);
+  }
+
+  for (let i = 1; i <= numShares; i++) {
+   
+    const randomFiles = getRandom(files, threshold);
     const promises = [];
 
     var verified = true;
@@ -42,7 +50,7 @@ const verifyKeys = (files, numShares, threshold, address) => {
       readFiles(randomFiles, { encoding: 'utf8' }, function (shares) {
         const valid = eth.verifyShares(shares, address);
         verified = verified && valid;
-        resolve(valid);
+        resolve(true);
       }, function (err) {
         reject(err);
       });
