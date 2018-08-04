@@ -42,9 +42,11 @@ const verifyKeys = (numShares, threshold, address) => {
         })
     );
 
-    return Promise.all(promises).then(
-      valid => { return valid; }
-    ).catch(
+    return Promise.all(promises).then(validArray => {
+      return validArray.reduce((res, valid) => {
+        res = res && valid;
+      }, true);
+    }).catch(
       err => { throw err; }
     );
   }
@@ -54,7 +56,6 @@ const createSplitKeys = (walletName, entropy, numShares, threshold) => {
   // create wallet with split keys
   logText("creating wallet");
 
-  try {
     const data = eth.createWallet(entropy, numShares, threshold);
     // write files to pendrive
     logText("writing split keys");
@@ -64,24 +65,15 @@ const createSplitKeys = (walletName, entropy, numShares, threshold) => {
       const splitFilename = `${usbBasePath}/${walletName}-${index + 1}/split.txt`;
       const addressFilename = `${usbBasePath}/${walletName}-${index + 1}/address.txt`;
 
-      promises.push(
-        writeFile(splitFilename, share).then(() => {
-          return true;
-        }));
-      promises.push(
-        writeFile(addressFilename, data.address).then(() => {
-          return true;
-        }));
+      promises.push(writeFile(splitFilename, share));
+      promises.push(writeFile(addressFilename, data.address));
     });
 
-    return Promise.all(promises).then(success => {
-      return success;
+    return Promise.all(promises).then(() => {
+      return verifyKeys(walletName,numShares, threshold, data.address)
     }).catch(err => {
       throw err;
     });
-  } catch (err) {
-    throw err;
-  }
 }
 
 module.exports = {
