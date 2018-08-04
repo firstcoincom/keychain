@@ -22,7 +22,7 @@ const getRandom = (arr, n) => {
   return result;
 }
 
-const verifyKeys = (numShares, threshold, address) => {
+const verifyKeys = (walletName, numShares, threshold, address) => {
 
   logText("verify keys");
   const files = [];
@@ -77,6 +77,5 @@ const createSplitKeys = (walletName, entropy, numShares, threshold) => {
 }
 
 module.exports = {
-  createSplitKeys,
-  verifyKeys
+  createSplitKeys
 }
