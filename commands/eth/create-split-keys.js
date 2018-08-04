@@ -1,17 +1,8 @@
-const prompt = require('prompt');
-const write = require('write');
+const writeFile = require('write');
 const readFiles = require('read-files-promise');
-const fs = require('fs');
 
 const eth = require('../../lib/eth');
 const utils = require('../utils');
-
-const logError = err => {
-  if (err) {
-    console.log(err);
-    process.exit(-1);
-  }
-}
 
 const logText = text => console.log(`\n============${text}================\n`)
 const usbBasePath = utils.getUsbBasePath();
@@ -33,7 +24,7 @@ const getRandom = (arr, n) => {
 
 const verifyKeys = (numShares, threshold, address) => {
 
-  logText("verify keys"); 
+  logText("verify keys");
   const files = [];
   for (let i = 1; i <= numShares; i++) {
     const splitFilename = `${usbBasePath}/${walletName}-${i}/split.txt`;
@@ -41,69 +32,56 @@ const verifyKeys = (numShares, threshold, address) => {
   }
 
   for (let i = 1; i <= numShares; i++) {
-   
     const randomFiles = getRandom(files, threshold);
     const promises = [];
 
-    var verified = true;
-    promises.push(new Promise(function (resolve, reject) {
-      readFiles(randomFiles, { encoding: 'utf8' }, function (shares) {
-        const valid = eth.verifyShares(shares, address);
-        verified = verified && valid;
-        resolve(true);
-      }, function (err) {
-        reject(err);
-      });
-    }));
+    promises.push(
+      readFiles(randomFiles, { encoding: 'utf8' })
+        .then(shares => {
+          return eth.verifyShares(shares, address);
+        })
+    );
 
-    return Promise.all(promises).then(function () {
-      return verified;
-    }).catch(function (err) {
-      throw err;
-    });
+    return Promise.all(promises).then(
+      valid => { return valid; }
+    ).catch(
+      err => { throw err; }
+    );
   }
 }
 
 const createSplitKeys = (walletName, entropy, numShares, threshold) => {
   // create wallet with split keys
   logText("creating wallet");
-  const data = eth.createWallet(entropy, numShares, threshold);
 
-  // write files to pendrive
-  logText("writing split keys");
+  try {
+    const data = eth.createWallet(entropy, numShares, threshold);
+    // write files to pendrive
+    logText("writing split keys");
+    const promises = [];
 
-  const files = [];
-  const promises = [];
+    data.shares.forEach((share, index) => {
+      const splitFilename = `${usbBasePath}/${walletName}-${index + 1}/split.txt`;
+      const addressFilename = `${usbBasePath}/${walletName}-${index + 1}/address.txt`;
 
-  data.shares.forEach((share, index) => {
-    const splitFilename = `${usbBasePath}/${walletName}-${index + 1}/split.txt`;
-    const addressFilename = `${usbBasePath}/${walletName}-${index + 1}/address.txt`;
-    files.push(splitFilename);
+      promises.push(
+        writeFile(splitFilename, share).then(() => {
+          return true;
+        }));
+      promises.push(
+        writeFile(addressFilename, data.address).then(() => {
+          return true;
+        }));
+    });
 
-    promises.push(new Promise(function (resolve, reject) {
-      write(splitFilename, share).then(function () {
-        resolve(true);
-      }).catch(function (err) {
-        reject(err);
-      });
-    }));
-
-    promises.push(new Promise(function (resolve, reject) {
-      write(addressFilename, data.address).then(function () {
-        resolve(true);
-      }).catch(function (err) {
-        reject(err);
-      });
-    }));
-  });
-
-  return Promise.all(promises).then(function () {
-    console.log(data);
-    return data;
-  }).catch(function (err) {
-    console.log(err);
+    return Promise.all(promises).then(success => {
+      return success;
+    }).catch(err => {
+      throw err;
+    });
+  } catch (err) {
     throw err;
-  });
+  }
 }
 
 module.exports = {
