@@ -31,25 +31,23 @@ const verifyKeys = (walletName, numShares, threshold, address) => {
     files.push(splitFilename);
   }
 
+  const promises = [];
   for (let i = 1; i <= numShares; i++) {
     const randomFiles = getRandom(files, threshold);
-    const promises = [];
-
     promises.push(
       readFiles(randomFiles, { encoding: 'utf8' })
         .then(shares => {
           return eth.verifyShares(shares, address);
         })
     );
-
-    return Promise.all(promises).then(validArray => {
-      return validArray.reduce((res, valid) => {
-        res = res && valid;
-      }, true);
-    }).catch(
-      err => { throw err; }
-    );
   }
+
+  return Promise.all(promises).then(validArray => {
+    let isValid = validArray.every(current => {
+      return current;
+    });
+    return isValid ? address : null;
+  }).catch(err => { throw err });
 }
 
 const createSplitKeys = (walletName, entropy, numShares, threshold) => {
@@ -66,6 +64,7 @@ const createSplitKeys = (walletName, entropy, numShares, threshold) => {
       const addressFilename = `${usbBasePath}/${walletName}-${index + 1}/address.txt`;
 
       promises.push(writeFile(splitFilename, share));
+      
       promises.push(writeFile(addressFilename, data.address));
     });
 
